@@ -1,5 +1,5 @@
-view: fbads_ad_20200101 {
-  sql_table_name: `positive-harbor-329408.source_supermetrics.FBADS_AD_*`
+view: fbads_ad {
+  sql_table_name: `{{ user_attribute.connection }}.source_supermetrics.FBADS_AD_*`
     ;;
 
   dimension: account_id {
@@ -21,56 +21,67 @@ view: fbads_ad_20200101 {
   }
 
   dimension: action_app_custom_event_fb_mobile_achievement_unlocked {
+    group_label: "Action App Custom Event"
     type: number
     sql: ${TABLE}.action_app_custom_event_fb_mobile_achievement_unlocked ;;
   }
 
   dimension: action_app_custom_event_fb_mobile_activate_app {
+    group_label: "Action App Custom Event"
+    label: "Mobile Activate App"
     type: number
     sql: ${TABLE}.action_app_custom_event_fb_mobile_activate_app ;;
   }
 
   dimension: action_app_custom_event_fb_mobile_add_payment_info {
+    group_label: "Action App Custom Event"
     type: number
     sql: ${TABLE}.action_app_custom_event_fb_mobile_add_payment_info ;;
   }
 
   dimension: action_app_custom_event_fb_mobile_add_to_cart {
+    group_label: "Action App Custom Event"
     type: number
     sql: ${TABLE}.action_app_custom_event_fb_mobile_add_to_cart ;;
   }
 
   dimension: action_app_custom_event_fb_mobile_add_to_wishlist {
+    group_label: "Action App Custom Event"
     type: number
     sql: ${TABLE}.action_app_custom_event_fb_mobile_add_to_wishlist ;;
   }
 
   dimension: action_app_custom_event_fb_mobile_complete_registration {
+    group_label: "Action App Custom Event"
     type: number
     sql: ${TABLE}.action_app_custom_event_fb_mobile_complete_registration ;;
   }
 
   dimension: action_app_custom_event_fb_mobile_content_view {
+    group_label: "Action App Custom Event"
     type: number
     sql: ${TABLE}.action_app_custom_event_fb_mobile_content_view ;;
   }
 
   dimension: action_app_custom_event_fb_mobile_initiated_checkout {
+    group_label: "Action App Custom Event"
     type: number
     sql: ${TABLE}.action_app_custom_event_fb_mobile_initiated_checkout ;;
   }
 
   dimension: action_app_custom_event_fb_mobile_level_achieved {
+    group_label: "Action App Custom Event"
     type: number
     sql: ${TABLE}.action_app_custom_event_fb_mobile_level_achieved ;;
   }
 
   dimension: action_app_custom_event_fb_mobile_purchase {
+    group_label: "Action App Custom Event"
     type: number
     sql: ${TABLE}.action_app_custom_event_fb_mobile_purchase ;;
   }
 
-  dimension: action_app_custom_event_fb_mobile_search {
+  dimension: action_app_custom_event_fb_mobile_search { group_label: "Action App Custom Event"
     type: number
     sql: ${TABLE}.action_app_custom_event_fb_mobile_search ;;
   }
@@ -249,21 +260,25 @@ view: fbads_ad_20200101 {
   }
 
   dimension: ad_group_budget_remaining {
+    view_label: "Ad Group"
     type: number
     sql: ${TABLE}.ad_group_budget_remaining ;;
   }
 
   dimension: ad_group_configured_status {
+    view_label: "Ad Group"
     type: string
     sql: ${TABLE}.ad_group_configured_status ;;
   }
 
   dimension: ad_group_daily_budget {
+    view_label: "Ad Group"
     type: number
     sql: ${TABLE}.ad_group_daily_budget ;;
   }
 
   dimension_group: ad_group_end {
+    view_label: "Ad Group"
     type: time
     timeframes: [
       raw,
@@ -1008,6 +1023,27 @@ view: fbads_ad_20200101 {
   measure: count {
     type: count
     drill_fields: [detail*]
+  }
+
+  dimension: roi {
+    type: number
+    sql: 1.0*${offsite_conversion_value_fb_pixel_purchase}/nullif(${cost},0) ;;
+  }
+
+  measure: total_revenue {
+    type: sum
+    sql: ${offsite_conversion_value_fb_pixel_purchase} ;;
+    value_format_name: usd_0
+  }
+
+  measure: average_roi {
+    type: average
+    sql: ${roi} ;;
+  }
+
+  measure: total_impressions {
+    type: sum
+    sql: ${impressions} ;;
   }
 
   measure: total_cost {
