@@ -13,3 +13,5 @@ include: "/views/*.lkml"
 # }
 
 explore: multichannel_table {}
+
+explore: fbads_ad {}

@@ -1,6 +1,15 @@
 view: fbads_ad {
-  sql_table_name: `{{ user_attribute.connection }}.source_supermetrics.FBADS_AD_*`
+  sql_table_name: `{{ bigquery_project._parameter_value | replace: "'", "" }}.source_supermetrics.FBADS_AD_*`
     ;;
+
+  parameter: bigquery_project {
+    type: string
+    allowed_value: {
+      value: "positive-harbor-329408" }
+    allowed_value: {
+      value: "izac-dashboard" }
+  }
+
 
   dimension: account_id {
     type: string
