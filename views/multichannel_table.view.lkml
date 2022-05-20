@@ -102,8 +102,7 @@ dimension: data_source_name {
 
 dimension_group: date {
   type: time
-  datatype: date
-  sql: ${TABLE}.date ;;
+  sql: timestamp(${TABLE}.date) ;;
 }
 
 dimension: device {
@@ -146,7 +145,10 @@ dimension: revenue {
   sql: ${TABLE}.revenue ;;
 }
 
-
+dimension: brand {
+  type: yesno
+  sql: ${campaign_name} like '%Brand%'  ;;
+}
 
 
   measure: total_revenue {
@@ -160,6 +162,10 @@ dimension: revenue {
     sql: ${clicks} ;;
   }
 
+  measure: total_conversions {
+    type: sum
+    sql: ${conversions} ;;
+  }
 
   measure: total_impressions {
     type: sum
@@ -167,9 +173,11 @@ dimension: revenue {
   }
 
   measure: total_cost {
+    label: "Total Spend"
     type: sum
     sql: ${cost_usd} ;;
     value_format_name: usd_0
+    html: <p style="color: black; font-size:300%; text-align:center">{{ rendered_value }}</p> ;;
   }
 
   measure: roas {
@@ -182,6 +190,13 @@ dimension: revenue {
   measure: cpc {
     type: number
     sql: 1*${total_cost}/nullif(${total_clicks},0) ;;
+    value_format_name: usd
+
+  }
+
+  measure: cpa {
+    type: number
+    sql: 1*${total_revenue}/nullif(${total_conversions},0) ;;
     value_format_name: usd
 
   }
@@ -295,6 +310,78 @@ dimension: revenue {
                   end
         END;;
   }
+
+
+
+  filter: first_period_filter {
+    view_label: "_PoP"
+    group_label: "Arbitrary Period Comparisons"
+    description: "Choose the first date range to compare against. This must be before the second period"
+    type: date
+  }
+
+  filter: second_period_filter {
+    view_label: "_PoP"
+    group_label: "Arbitrary Period Comparisons"
+    description: "Choose the second date range to compare to. This must be after the first period"
+    type: date
+  }
+
+## ------------------ HIDDEN HELPER DIMENSIONS  ------------------ ##
+
+  dimension: days_from_start_first {
+    view_label: "_PoP"
+    hidden: yes
+    type: duration_day
+    sql_start: {% date_start first_period_filter %} ;;
+    sql_end: ${date_raw} ;;
+  }
+
+  dimension: days_from_start_second {
+    view_label: "_PoP"
+    hidden: yes
+    type: duration_day
+    sql_start: {% date_start second_period_filter %} ;;
+    sql_end: ${date_raw} ;;
+  }
+
+## ------------------ DIMENSIONS TO PLOT ------------------ ##
+
+  dimension: days_from_first_period {
+    view_label: "_PoP"
+    description: "Select for Grouping (Rows)"
+    group_label: "Arbitrary Period Comparisons"
+    type: number
+    sql:
+        CASE
+        WHEN ${days_from_start_second} >= 0
+        THEN ${days_from_start_second}
+        WHEN ${days_from_start_first} >= 0
+        THEN ${days_from_start_first}
+        END;;
+  }
+
+
+  dimension: period_selected {
+    view_label: "_PoP"
+    group_label: "Arbitrary Period Comparisons"
+    label: "First or second period"
+    description: "Select for Comparison (Pivot)"
+    type: string
+    sql:
+        CASE
+            WHEN {% condition first_period_filter %}${date_raw} {% endcondition %}
+            THEN 'First Period'
+            WHEN {% condition second_period_filter %}${date_raw} {% endcondition %}
+            THEN 'Second Period'
+            END ;;
+  }
+
+## Filtered measures
+
+
+
+
 
 
 drill_fields: [

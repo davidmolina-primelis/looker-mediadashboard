@@ -12,6 +12,10 @@ include: "/views/*.lkml"
 #   }
 # }
 
-explore: multichannel_table {}
-
-explore: fbads_ad {}
+explore: multichannel_table {
+  label: "Campaigns, ads and clicks"
+  view_label: "Channel"
+  always_filter: {
+    filters: [first_period_filter: "NOT NULL", second_period_filter: "NOT NULL", period_selected:"-NULL"]
+  }
+}
