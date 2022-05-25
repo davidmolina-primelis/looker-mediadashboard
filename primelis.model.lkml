@@ -15,7 +15,9 @@ include: "/views/*.lkml"
 explore: multichannel_table {
   label: "Campaigns, ads and clicks"
   view_label: "Channel"
-  always_filter: {
-    filters: [first_period_filter: "NOT NULL", second_period_filter: "NOT NULL", period_selected:"-NULL"]
-  }
+  sql_always_where: {% if multichannel_table.period_filter._in_query %}
+  ${period_comparison} is not null
+  {% else %}
+  1=1
+  {% endif %};;
 }

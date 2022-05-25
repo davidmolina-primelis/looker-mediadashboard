@@ -1,6 +1,7 @@
 view: multichannel_table {
 derived_table: {
-  sql: SELECT 'Facebook' as channel,ad_id,campaign_id,campaign_name,ad_group_id,
+  sql:
+  SELECT 'Facebook' as channel,ad_id,campaign_id,campaign_name,ad_group_id,
   ad_group_name,ad_status,campaign_status,data_source_name,date,
   impression_device as device,publisher_platform as network,account_id,cost_usd,clicks,impressions,conversion_value as conversions,
   offsite_conversion_value_fb_pixel_purchase as revenue
@@ -48,6 +49,21 @@ dimension: channel {
   sql: ${TABLE}.channel ;;
 }
 
+  dimension: channel_logo {
+    type: string
+    sql: ${channel};;
+      html: {% if channel._value == "Facebook" %}
+        <img src="https://images.ctfassets.net/k49d63tr8kcn/2vF3ZElXKIGwqSaKKYEiWc/b8a3ad438abea53938f2a2b5625e1549/facebook_ads_logo_240x90_web.svg">
+        {% elsif channel._value == "Google" %}
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/Google_Ads_logo.svg/192px-Google_Ads_logo.svg.png" height="240" width="240">
+        {% elsif brand._value == "TikTok" %}
+        <img src="https://upload.wikimedia.org/wikipedia/en/thumb/f/f0/Hanes-logo.svg/150px-Hanes-logo.svg.png">
+        {% elsif brand._value == "Bing"%}
+        {% else %}
+        {% endif %} ;;
+  }
+
+
 dimension: ad_id {
   type: string
   sql: ${TABLE}.ad_id ;;
@@ -73,6 +89,7 @@ dimension: campaign_name {
 
 
 }
+
 
 dimension: ad_group_id {
   type: string
@@ -147,7 +164,7 @@ dimension: revenue {
 
 dimension: brand {
   type: yesno
-  sql: ${campaign_name} like '%Brand%'  ;;
+  sql: ${campaign_name} like '%rand%'    ;;
 }
 
 
@@ -165,6 +182,7 @@ dimension: brand {
   measure: total_conversions {
     type: sum
     sql: ${conversions} ;;
+    value_format_name: decimal_2
   }
 
   measure: total_impressions {
@@ -177,7 +195,7 @@ dimension: brand {
     type: sum
     sql: ${cost_usd} ;;
     value_format_name: usd_0
-    html: <p style="color: black; font-size:300%; text-align:center">{{ rendered_value }}</p> ;;
+    # html: <p style="color: black; font-size:300%; text-align:center">{{ rendered_value }}</p> ;;
   }
 
   measure: roas {
@@ -201,97 +219,57 @@ dimension: brand {
 
   }
 
-  dimension: date_period {
-    label_from_parameter: date_granularity
-    sql:
-      {% if date_granularity._parameter_value == "DAY" %}
-        ${date_date}
-      {% elsif  date_granularity._parameter_value == "ISOWEEK" %}
-        ${date_week}
-      {% elsif  date_granularity._parameter_value == "MONTH" %}
-        ${date_month}
-      {% elsif  date_granularity._parameter_value == "QUARTER" %}
-        ${date_quarter}
-      {% elsif  date_granularity._parameter_value == "YEAR" %}
-        ${date_year}
-       {% endif %} ;;
+
+
+
+  filter: period_filter {
+    description: "Choose the first date range to compare against. This must be before the second period"
+    type: date
   }
 
-
-  parameter: date_granularity {
+  parameter: compared_to{
     type: unquoted
-    allowed_value: { value: "DAY" label: "Day"}
-    allowed_value: { value: "ISOWEEK" label: "Week"}
-    allowed_value: { value: "MONTH" label: "Month"}
-    allowed_value: { value: "QUARTER" label: "Quarter"}
-    allowed_value: { value: "YEAR" label: "Year"}
-    default_value: "MONTH"
-  }
-
-  parameter: complete_period {
-    type: unquoted
-    allowed_value: { value: "Yes" }
-    allowed_value: { value: "No" }
+    allowed_value: { value: "previous" label: "Previous Period"}
+    allowed_value: { value: "last_year" label: "Same Period Last year"}
     default_value: "Yes"
   }
 
 
-
-  dimension_group: current {
+  dimension: duration {
     hidden: yes
-    type: time
-    sql:{% if   complete_period._parameter_value == "Yes" %}
-          cast(date_add(current_date, INTERVAL -1 {% parameter date_granularity %} ) as timestamp)
-          {% elsif  complete_period._parameter_value == "No" %}
-          cast(current_date as timestamp)
-          {% endif %} ;;
+    type: duration_day
+    sql_start:  CAST({% date_start period_filter %} AS DATE);;
+    sql_end: CAST({% date_end period_filter %} AS DATE) ;;
   }
 
 
-  dimension: current_period {
-    hidden: yes
-    label_from_parameter: date_granularity
-    sql:
-      {% if   date_granularity._parameter_value == "DAY" %}
-        ${current_date}
-      {% elsif  date_granularity._parameter_value == "ISOWEEK" %}
-        ${current_week}
-      {% elsif  date_granularity._parameter_value == "MONTH" %}
-        ${current_month}
-      {% elsif  date_granularity._parameter_value == "QUARTER" %}
-        ${current_quarter}
-      {% elsif  date_granularity._parameter_value == "YEAR" %}
-        ${current_year}
-       {% endif %} ;;
-  }
 
-  dimension_group: previous {
-    hidden: yes
+
+
+  dimension_group: previous_start {
+     hidden: yes
     type: time
-    sql: {% if   complete_period._parameter_value == "Yes" %}
-           cast(date_add(current_date, INTERVAL -2 {% parameter date_granularity %} ) as timestamp)
-           {% elsif  complete_period._parameter_value == "No" %}
-           cast(date_add(current_date, INTERVAL -1 {% parameter date_granularity %} ) as timestamp)
+    datatype: date
+    sql: {% if   compared_to._parameter_value == "previous" %}
+           date_add(CAST({% date_start period_filter %} AS DATE), INTERVAL -${duration} day )
+           {% elsif  compared_to._parameter_value == "last_year" %}
+           date_add(CAST({% date_start period_filter %} AS DATE), INTERVAL -1 year )
            {% endif %}
            ;;
 
   }
 
-  dimension: previous_period {
-    hidden: yes
-    label_from_parameter: date_granularity
-    sql:
-      {% if   date_granularity._parameter_value == "DAY" %}
-        ${previous_date}
-      {% elsif  date_granularity._parameter_value == "ISOWEEK" %}
-        ${previous_week}
-      {% elsif  date_granularity._parameter_value == "MONTH" %}
-        ${previous_month}
-      {% elsif  date_granularity._parameter_value == "QUARTER" %}
-        ${previous_quarter}
-      {% elsif  date_granularity._parameter_value == "YEAR" %}
-        ${previous_year}
-       {% endif %} ;;
+  dimension_group: previous_end {
+     hidden: yes
+    type: time
+    datatype: date
+    sql: {% if   compared_to._parameter_value == "previous" %}
+    date_add(CAST({% date_end period_filter %} AS DATE), INTERVAL -${duration}  day )
+    {% elsif  compared_to._parameter_value == "last_year" %}
+    date_add(CAST({% date_end period_filter %} AS DATE), INTERVAL -1 year )
+    {% endif %}
+    ;;
+
   }
 
 
@@ -301,83 +279,20 @@ dimension: brand {
     type: string
     description: "The reporting period as selected by the Period Filter"
     sql:
-    case WHEN ${date_period} is not null then
+    case WHEN ${date_date} is not null then
         CASE
-            WHEN ${date_period}= ${current_period}
-                  THEN 'This {% parameter date_granularity %}'
-            WHEN ${date_period} = ${previous_period}
-                  THEN 'Previous {% parameter date_granularity %}'
+            WHEN ${date_date} >=CAST( {% date_start period_filter %} as date) and ${date_date} <= CAST({% date_end period_filter %} as date)
+                  THEN 'This period'
+            WHEN ${date_date} >= ${previous_start_date} and ${date_date} <= ${previous_end_date}
+                  THEN 'Previous period'
                   end
         END;;
   }
 
 
 
-  filter: first_period_filter {
-    view_label: "_PoP"
-    group_label: "Arbitrary Period Comparisons"
-    description: "Choose the first date range to compare against. This must be before the second period"
-    type: date
-  }
-
-  filter: second_period_filter {
-    view_label: "_PoP"
-    group_label: "Arbitrary Period Comparisons"
-    description: "Choose the second date range to compare to. This must be after the first period"
-    type: date
-  }
-
-## ------------------ HIDDEN HELPER DIMENSIONS  ------------------ ##
-
-  dimension: days_from_start_first {
-    view_label: "_PoP"
-    hidden: yes
-    type: duration_day
-    sql_start: {% date_start first_period_filter %} ;;
-    sql_end: ${date_raw} ;;
-  }
-
-  dimension: days_from_start_second {
-    view_label: "_PoP"
-    hidden: yes
-    type: duration_day
-    sql_start: {% date_start second_period_filter %} ;;
-    sql_end: ${date_raw} ;;
-  }
-
-## ------------------ DIMENSIONS TO PLOT ------------------ ##
-
-  dimension: days_from_first_period {
-    view_label: "_PoP"
-    description: "Select for Grouping (Rows)"
-    group_label: "Arbitrary Period Comparisons"
-    type: number
-    sql:
-        CASE
-        WHEN ${days_from_start_second} >= 0
-        THEN ${days_from_start_second}
-        WHEN ${days_from_start_first} >= 0
-        THEN ${days_from_start_first}
-        END;;
-  }
 
 
-  dimension: period_selected {
-    view_label: "_PoP"
-    group_label: "Arbitrary Period Comparisons"
-    label: "First or second period"
-    description: "Select for Comparison (Pivot)"
-    type: string
-    sql:
-        CASE
-            WHEN {% condition first_period_filter %}${date_raw} {% endcondition %}
-            THEN 'First Period'
-            WHEN {% condition second_period_filter %}${date_raw} {% endcondition %}
-            THEN 'Second Period'
-            END ;;
-  }
-
-## Filtered measures
 
 
 
