@@ -3,15 +3,15 @@ derived_table: {
   sql:
   SELECT 'Facebook' as channel,ad_id,campaign_id,campaign_name,ad_group_id,
   ad_group_name,ad_status,campaign_status,data_source_name,date,
-  impression_device as device,publisher_platform as network,account_id,cost_usd,clicks,impressions,conversion_value as conversions,
+  impression_device as device,publisher_platform as network,account_id,cost_usd,clicks,impressions,unique_outbound_clicks as conversions,
   offsite_conversion_value_fb_pixel_purchase as revenue
-      FROM `{{ bigquery_project._parameter_value | replace: "'", "" }}.source_supermetrics.FBADS_AD_*` where ((( TIMESTAMP(PARSE_DATE('%Y%m%d', REGEXP_EXTRACT(_TABLE_SUFFIX,r'\d\d\d\d\d\d\d\d')))  ) >= ((TIMESTAMP_ADD(TIMESTAMP_TRUNC(CURRENT_TIMESTAMP(), DAY), INTERVAL -119 DAY))) AND ( TIMESTAMP(PARSE_DATE('%Y%m%d', REGEXP_EXTRACT(_TABLE_SUFFIX,r'\d\d\d\d\d\d\d\d')))  ) < ((TIMESTAMP_ADD(TIMESTAMP_ADD(TIMESTAMP_TRUNC(CURRENT_TIMESTAMP(), DAY), INTERVAL -119 DAY), INTERVAL 120 DAY)))))
+      FROM `{{ bigquery_project._parameter_value | replace: "'", "" }}.source_supermetrics.FBADS_AD_*` where ((( TIMESTAMP(PARSE_DATE('%Y%m%d', REGEXP_EXTRACT(_TABLE_SUFFIX,r'\d\d\d\d\d\d\d\d')))  ) >= ((TIMESTAMP_ADD(TIMESTAMP_TRUNC(CURRENT_TIMESTAMP(), DAY), INTERVAL -509 DAY))) AND ( TIMESTAMP(PARSE_DATE('%Y%m%d', REGEXP_EXTRACT(_TABLE_SUFFIX,r'\d\d\d\d\d\d\d\d')))  ) < ((TIMESTAMP_ADD(TIMESTAMP_ADD(TIMESTAMP_TRUNC(CURRENT_TIMESTAMP(), DAY), INTERVAL -509 DAY), INTERVAL 510 DAY)))))
             union all
             SELECT 'Google' as channel,ad_id,campaign_id,campaign_name,
   ad_group_id,ad_group_name,ad_status,campaign_status,data_source_name,date,
   device,network,account_id,cost_usd,clicks,active_view_impressions as impressions,conversions,
   null as revenue
-            FROM `{{ bigquery_project._parameter_value | replace: "'", "" }}.source_supermetrics.GOOGLEADS_AD_*` where ((( TIMESTAMP(PARSE_DATE('%Y%m%d', REGEXP_EXTRACT(_TABLE_SUFFIX,r'\d\d\d\d\d\d\d\d')))  ) >= ((TIMESTAMP_ADD(TIMESTAMP_TRUNC(CURRENT_TIMESTAMP(), DAY), INTERVAL -119 DAY))) AND ( TIMESTAMP(PARSE_DATE('%Y%m%d', REGEXP_EXTRACT(_TABLE_SUFFIX,r'\d\d\d\d\d\d\d\d')))  ) < ((TIMESTAMP_ADD(TIMESTAMP_ADD(TIMESTAMP_TRUNC(CURRENT_TIMESTAMP(), DAY), INTERVAL -119 DAY), INTERVAL 120 DAY)))))
+            FROM `{{ bigquery_project._parameter_value | replace: "'", "" }}.source_supermetrics.GOOGLEADS_AD_*` where ((( TIMESTAMP(PARSE_DATE('%Y%m%d', REGEXP_EXTRACT(_TABLE_SUFFIX,r'\d\d\d\d\d\d\d\d')))  ) >= ((TIMESTAMP_ADD(TIMESTAMP_TRUNC(CURRENT_TIMESTAMP(), DAY), INTERVAL -509 DAY))) AND ( TIMESTAMP(PARSE_DATE('%Y%m%d', REGEXP_EXTRACT(_TABLE_SUFFIX,r'\d\d\d\d\d\d\d\d')))  ) < ((TIMESTAMP_ADD(TIMESTAMP_ADD(TIMESTAMP_TRUNC(CURRENT_TIMESTAMP(), DAY), INTERVAL -509 DAY), INTERVAL 510 DAY)))))
  --     union all
  --           SELECT 'TikTok' as channel,ad_id,campaign_id,campaign_name,
  -- ad_group_id,ad_group_name,ad_status,campaign_operation_status as campaign_status,data_source_name,date,
@@ -25,8 +25,10 @@ derived_table: {
 --  revenue
 --            FROM `{{ bigquery_project._parameter_value | replace: "'", "" }}.source_supermetrics.BINGADS_AD_*` where ((( TIMESTAMP(PARSE_DATE('%Y%m%d', REGEXP_EXTRACT(_TABLE_SUFFIX,r'\d\d\d\d\d\d\d\d')))  ) >= ((TIMESTAMP_ADD(TIMESTAMP_TRUNC(CURRENT_TIMESTAMP(), DAY), INTERVAL -119 DAY))) AND ( TIMESTAMP(PARSE_DATE('%Y%m%d', REGEXP_EXTRACT(_TABLE_SUFFIX,r'\d\d\d\d\d\d\d\d')))  ) < ((TIMESTAMP_ADD(TIMESTAMP_ADD(TIMESTAMP_TRUNC(CURRENT_TIMESTAMP(), DAY), INTERVAL -119 DAY), INTERVAL 120 DAY)))))
 
-
       ;;
+
+      persist_for: "96 hours"
+      partition_keys: ["date"]
 }
 
 measure: count {
@@ -45,6 +47,7 @@ measure: count {
   }
 
 dimension: channel {
+  suggest_persist_for: "96 hours"
   type: string
   sql: ${TABLE}.channel ;;
 }
@@ -113,6 +116,7 @@ dimension: campaign_status {
 }
 
 dimension: data_source_name {
+  suggest_persist_for: "96 hours"
   type: string
   sql: ${TABLE}.data_source_name ;;
 }
@@ -128,6 +132,7 @@ dimension: device {
 }
 
 dimension: network {
+  suggest_persist_for: "96 hours"
   type: string
   sql: ${TABLE}.network ;;
 }
@@ -197,6 +202,14 @@ dimension: brand {
     value_format_name: usd_0
     # html: <p style="color: black; font-size:300%; text-align:center">{{ rendered_value }}</p> ;;
   }
+
+  # measure: total_cost_html {
+  #   label: "Total Spend"
+  #   type: sum
+  #   sql: ${cost_usd} ;;
+  #   value_format_name: usd_0
+  #   html: <p style="color: black; font-size:300%; text-align:center">{{ rendered_value }}</p> ;;
+  # }
 
   measure: roas {
     type: number
