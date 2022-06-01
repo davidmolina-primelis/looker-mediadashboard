@@ -87,7 +87,7 @@ dimension: campaign_name {
 
   link: {
     label: "Ouvrir dashboard campagne"
-    url: "/dashboards/4?Campaign+ID={{ campaign_id._value }}"
+    url: "/dashboards/4?Campaign+ID={{ campaign_id._value }}&Bigquery+Project={{ bigquery_project._value }}"
   }
 
 
@@ -145,26 +145,31 @@ dimension: account_id {
 dimension: cost_usd {
   type: number
   sql: ${TABLE}.cost_usd ;;
+  hidden: yes
 }
 
 dimension: clicks {
   type: number
   sql: ${TABLE}.clicks ;;
+  hidden: yes
 }
 
 dimension: impressions {
   type: number
   sql: ${TABLE}.impressions ;;
+  hidden: yes
 }
 
 dimension: conversions {
   type: number
   sql: ${TABLE}.conversions ;;
+  hidden: yes
 }
 
 dimension: revenue {
   type: number
   sql: ${TABLE}.revenue ;;
+  hidden: yes
 }
 
 dimension: brand {
