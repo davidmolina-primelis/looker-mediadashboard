@@ -181,30 +181,32 @@ dimension: brand {
   measure: total_revenue {
     type: sum
     sql: ${revenue} ;;
-    value_format_name: usd_0
+    value_format_name: large_usd
   }
 
   measure: total_clicks {
     type: sum
     sql: ${clicks} ;;
+    value_format_name: large_number
   }
 
   measure: total_conversions {
     type: sum
     sql: ${conversions} ;;
-    value_format_name: decimal_2
+    value_format_name: large_number
   }
 
   measure: total_impressions {
     type: sum
     sql: ${impressions} ;;
+    value_format_name: large_number
   }
 
   measure: total_cost {
     label: "Total Spend"
     type: sum
     sql: ${cost_usd} ;;
-    value_format_name: usd_0
+    value_format_name: large_usd
     # html: <p style="color: black; font-size:300%; text-align:center">{{ rendered_value }}</p> ;;
   }
 
