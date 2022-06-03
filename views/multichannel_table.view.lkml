@@ -36,6 +36,7 @@ measure: count {
 }
 
   parameter: bigquery_project {
+    suggest_persist_for: "96 hours"
     type: string
     default_value: "positive-harbor-329408"
     allowed_value: {
@@ -103,6 +104,7 @@ dimension: ad_group_id {
 }
 
 dimension: ad_group_name {
+  suggest_persist_for: "96 hours"
   type: string
   sql: ${TABLE}.ad_group_name ;;
 }
