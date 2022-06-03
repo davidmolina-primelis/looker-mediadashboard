@@ -81,13 +81,16 @@ dimension: campaign_name {
   type: string
   sql: ${TABLE}.campaign_name ;;
   link: {
-    label: "Ouvrir campagne"
+    label: "{% if channel._value == 'Facebook' %} Pause campaign in Facebook Ads {% else %} Pause campaign in Google Ads {% endif %}"
     url: "https://ads.gogle.com/{{ campaign_id._value }}"
+    icon_url: "{% if channel._value == 'Facebook' %}https://upload.wikimedia.org/wikipedia/commons/c/c2/F_icon.svg
+    {% else %}https://cdn.icon-icons.com/icons2/2699/PNG/512/google_ads_logo_icon_171064.png{% endif %}"
   }
 
   link: {
-    label: "Ouvrir dashboard campagne"
+    label: " Ouvrir dashboard {{ value }} "
     url: "/dashboards/4?Campaign+ID={{ campaign_id._value }}&Bigquery+Project={{ bigquery_project._value }}"
+    icon_url: "https://www.svgrepo.com/show/354012/looker-icon.svg"
   }
 
 
