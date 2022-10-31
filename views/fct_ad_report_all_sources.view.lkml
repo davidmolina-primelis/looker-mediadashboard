@@ -2,6 +2,29 @@ view: fct_ad_report_all_sources {
   sql_table_name: `positive-harbor-329408.mart_dossier.fct_ad_report_all_sources`
     ;;
 
+  dimension: pk {
+    hidden: yes
+    primary_key: yes
+    type: string
+    sql: concat(${date_date},${source}) ;;
+  }
+
+  dimension_group: date {
+    type: time
+    timeframes: [
+      raw,
+      date,
+      week,
+      month,
+      quarter,
+      year,
+      time
+    ]
+    convert_tz: no
+    datatype: date
+    sql: ${TABLE}.date ;;
+  }
+
   dimension: clicks {
     type: number
     sql: ${TABLE}.clicks ;;
@@ -20,21 +43,6 @@ view: fct_ad_report_all_sources {
   dimension: cost {
     type: number
     sql: ${TABLE}.cost ;;
-  }
-
-  dimension_group: date {
-    type: time
-    timeframes: [
-      raw,
-      date,
-      week,
-      month,
-      quarter,
-      year
-    ]
-    convert_tz: no
-    datatype: date
-    sql: ${TABLE}.date ;;
   }
 
   dimension: impressions {
