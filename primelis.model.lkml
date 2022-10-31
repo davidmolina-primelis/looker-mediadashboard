@@ -1,6 +1,7 @@
 connection: "dossier_-_bigquery"
 
 include: "/views/*.lkml"
+include: "/explores/*.explore"
 # include: "/**/*.view.lkml"                 # include all views in this project
 # include: "my_dashboard.dashboard.lookml"   # include a LookML dashboard called my_dashboard
 
@@ -16,12 +17,4 @@ named_value_format: large_usd { value_format: "[>=1000000]\"$\"0.00,,\"M\";[>=10
 named_value_format: large_number { value_format: "[>=1000000]0.00,,\"M\";[>=1000]0.00,\"K\";0" }
 
 
-explore: multichannel_table {
-  label: "Campaigns, ads and clicks"
-  view_label: "Channel"
-  sql_always_where: {% if multichannel_table.period_filter._in_query %}
-  ${period_comparison} is not null
-  {% else %}
-  1=1
-  {% endif %};;
-}
+explore: fct_ad_report_all_sources {}
