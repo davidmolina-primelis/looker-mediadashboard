@@ -59,4 +59,38 @@ view: fct_ad_report_all_sources {
     type: count
     drill_fields: []
   }
+
+  measure: total_conversions {
+    type: sum
+    sql: ${conversions};;
+  }
+
+  measure: total_clicks {
+    type: sum
+    sql: ${clicks};;
+  }
+
+  measure: per_conv {
+    type: number
+    sql: ${total_conversions}/${total_clicks};;
+  }
+
+  measure: total_cost {
+    type: sum
+    sql: ${cost}
+    value_format_name :  usd;;
+  }
+
+  measure: CPA {
+    type: number
+    sql: ${total_conversions}/${total_clicks}
+    value_format_name :  usd;;
+  }
+
+  measure: CPC {
+    type: number
+    sql: ${total_cost}/${total_clicks}
+      value_format_name :  usd;;
+  }
+
 }
