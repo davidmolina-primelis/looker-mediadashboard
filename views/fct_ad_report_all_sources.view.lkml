@@ -59,4 +59,24 @@ view: fct_ad_report_all_sources {
     type: count
     drill_fields: []
   }
+
+  measure: total_impressions {
+    type: sum
+    sql: ${TABLE}.impressions ;;
+  }
+
+  measure: total_cost {
+    type: sum
+    sql: ${TABLE}.cost ;;
+  }
+
+  measure: total_clicks {
+    type: sum
+    sql: ${TABLE}.clicks ;;
+  }
+
+  measure: click_through_rate {
+    type: number
+    sql: 1.0*${total_clicks}/nullif(${impressions},0) ;;
+  }
 }
