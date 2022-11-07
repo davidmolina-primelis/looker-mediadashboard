@@ -2,8 +2,10 @@ view: shp_sales {
   view_label: "Shopify Sales"
   sql_table_name: `positive-harbor-329408.source_supermetrics.SHP_SALES_*`;;
 
-  measure: count {
-    type: count
+  dimension: pk {
+    hidden: yes
+    primary_key: yes
+    sql: concat(${line_item_id},${partition_date}) ;;
   }
 
   dimension: customer_city {
@@ -232,6 +234,7 @@ view: shp_sales {
     sql: ${TABLE}.shop_name ;;
   }
 
+
   dimension: sku {
     type: string
     sql: ${TABLE}.sku ;;
@@ -280,6 +283,10 @@ view: shp_sales {
   dimension: total_sales {
     type: number
     sql: ${TABLE}.total_sales ;;
+  }
+
+  measure: count {
+    type: count
   }
 
 }
