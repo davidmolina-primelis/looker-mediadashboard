@@ -79,4 +79,30 @@ view: fct_ad_report_all_sources {
     type: number
     sql: 1.0*${total_clicks}/nullif(${impressions},0) ;;
   }
+
+  measure: total_conversion_value {
+    type: sum
+    sql: ${TABLE}.conversion_value ;;
+  }
+
+  measure: total_conversions {
+    type: sum
+    sql: ${TABLE}.conversions ;;
+  }
+
+  measure:averge_order_value {
+    type: number
+    sql: 1.0*${total_conversion_value}/nullif(${impressions},0) ;;
+  }
+
+  measure:return_on_ad_spend {
+    type: number
+    sql: 1.0*${total_conversion_value}/nullif(${total_cost},0) ;;
+  }
+
+  measure:cpm {
+    type: number
+    sql: 1.0*${total_cost}/nullif(${total_impressions},0)*1000 ;;
+  }
+
 }
