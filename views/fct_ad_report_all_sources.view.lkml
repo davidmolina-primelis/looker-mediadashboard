@@ -55,6 +55,36 @@ view: fct_ad_report_all_sources {
     sql: ${TABLE}.source ;;
   }
 
+
+  dimension: current_vs_previous {
+    hidden: yes
+    type: string
+    sql: case when {% condition parameters.choose_date %} timestamp(${date_date}) {% endcondition %} then 'Current Period'
+                when ${date_date} >= (date_sub(date({% date_start parameters.choose_date %}),INTERVAL ${parameters.days_days_in_period} day ))
+                and ${date_date} < (date_sub(date({% date_end parameters.choose_date %}),INTERVAL ${parameters.days_days_in_period} day )) then 'Previous Period'
+            end;;
+  }
+
+  dimension: current_year_vs_previous_year {
+    hidden: yes
+    type: string
+    sql:  case when {% condition parameters.choose_date %} timestamp(${date_date}) {% endcondition %} then 'Current Year '
+                when ${date_date} >= (date_sub(date({% date_start parameters.choose_date %}),INTERVAL 1 year ))
+                 and ${date_date} < (date_sub(date({% date_end parameters.choose_date %}),INTERVAL 1 year )) then 'Previous Year'
+           end ;;
+  }
+
+  dimension: selected_period {
+    view_label: "Parameters"
+    type: string
+    sql: {% if parameters.previous_comparison._parameter_value == 'previous_period'%} ${current_vs_previous}
+          {% elsif parameters.previous_comparison._parameter_value == 'previous_year' %} ${current_year_vs_previous_year}
+          {% else %} ${current_vs_previous}
+          {% endif %}
+     ;;
+  }
+
+
   measure: count {
     type: count
     drill_fields: []
