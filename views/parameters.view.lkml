@@ -11,11 +11,11 @@ view: parameters {
     default_value: "previous_period"
     allowed_value: {
       value: "previous_period"
-      label: "Selected Period vs Previous Period"
+      label: "vs Previous Period"
     }
     allowed_value: {
       value: "previous_year"
-      label: "Selected Period vs Same Period Previous Year"
+      label: "vs Previous Year"
     }
   }
 

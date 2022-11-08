@@ -60,8 +60,8 @@ view: fct_ad_report_all_sources {
     hidden: yes
     type: string
     sql: case when {% condition parameters.choose_date %} timestamp(${date_date}) {% endcondition %} then 'Current Period'
-                when ${date_date} >= (date_sub(date({% date_start parameters.choose_date %}),INTERVAL ${parameters.days_days_in_period} day ))
-                and ${date_date} < (date_sub(date({% date_end parameters.choose_date %}),INTERVAL ${parameters.days_days_in_period} day )) then 'Previous Period'
+                when ${date_date} > (date_sub(date({% date_start parameters.choose_date %}),INTERVAL ${parameters.days_days_in_period} day ))
+                and ${date_date} <= (date_sub(date({% date_end parameters.choose_date %}),INTERVAL ${parameters.days_days_in_period} day )) then 'Previous Period'
             end;;
   }
 
@@ -69,8 +69,8 @@ view: fct_ad_report_all_sources {
     hidden: yes
     type: string
     sql:  case when {% condition parameters.choose_date %} timestamp(${date_date}) {% endcondition %} then 'Current Year '
-                when ${date_date} >= (date_sub(date({% date_start parameters.choose_date %}),INTERVAL 1 year ))
-                 and ${date_date} < (date_sub(date({% date_end parameters.choose_date %}),INTERVAL 1 year )) then 'Previous Year'
+                when ${date_date} > (date_sub(date({% date_start parameters.choose_date %}),INTERVAL 1 year ))
+                 and ${date_date} <= (date_sub(date({% date_end parameters.choose_date %}),INTERVAL 1 year )) then 'Previous Year'
            end ;;
   }
 
@@ -120,11 +120,12 @@ view: fct_ad_report_all_sources {
   measure: total_conversions {
     type: sum
     sql: ${TABLE}.conversions ;;
+    value_format: "#,##0"
   }
 
   measure:averge_order_value {
     type: number
-    sql: 1.0*${total_conversion_value}/nullif(${impressions},0) ;;
+    sql: 1.0*${total_conversion_value}/nullif(${total_impressions},0) ;;
   }
 
   measure:return_on_ad_spend {
@@ -149,4 +150,11 @@ view: fct_ad_report_all_sources {
     sql: 1.0*${total_cost}/nullif(${total_conversions},0) ;;
     value_format: "$0.00"
     }
+
+  measure: Conv {
+    label: "Conv %"
+    type: number
+    sql: 1.0*${total_conversion_value}/nullif(${total_clicks},0);;
+  }
+
 }
