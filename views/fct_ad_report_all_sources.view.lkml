@@ -113,6 +113,7 @@ view: fct_ad_report_all_sources {
   }
 
   measure: total_conversion_value {
+    label: "Conversion Value"
     type: sum
     sql: ${TABLE}.conversion_value ;;
   }
