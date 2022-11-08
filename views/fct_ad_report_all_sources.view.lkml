@@ -126,10 +126,15 @@ view: fct_ad_report_all_sources {
 
   ### check this measure ###
 
-  measure:averge_order_value {
+  measure:average_order_value {
     type: number
     sql: 1.0*${total_conversion_value}/nullif(${total_impressions},0) ;;
   }
+
+  # measure: aov {
+  #   type: sum
+  #   sql: 1.0*${conversion_value}/nullif(${conversions},0) ;;
+  # }
 
   measure:return_on_ad_spend {
     label: "ROAS"
