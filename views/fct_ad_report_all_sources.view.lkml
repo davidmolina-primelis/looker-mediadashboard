@@ -131,6 +131,7 @@ view: fct_ad_report_all_sources {
   }
 
   measure:return_on_ad_spend {
+    label: "ROAS"
     type: number
     sql: 1.0*${total_conversion_value}/nullif(${total_cost},0) ;;
   }
