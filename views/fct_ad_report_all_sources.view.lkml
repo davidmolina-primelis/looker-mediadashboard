@@ -98,6 +98,7 @@ view: fct_ad_report_all_sources {
   measure: total_cost {
     type: sum
     sql: ${TABLE}.cost ;;
+    value_format_name: usd_0
   }
 
   measure: total_clicks {
@@ -107,7 +108,8 @@ view: fct_ad_report_all_sources {
 
   measure: click_through_rate {
     type: number
-    sql: 1.0*${total_clicks}/nullif(${impressions},0) ;;
+    sql: 1.0*${total_clicks}/nullif(${total_impressions},0) ;;
+    value_format: "0.00%"
   }
 
   measure: total_conversion_value {
@@ -133,6 +135,13 @@ view: fct_ad_report_all_sources {
   measure:cpm {
     type: number
     sql: 1.0*${total_cost}/nullif(${total_impressions},0)*1000 ;;
+    value_format:"$#.00"
+  }
+
+  measure: cpc {
+    type: number
+    sql: 1.0*${total_cost}/nullif(${total_clicks},0) ;;
+    value_format:"$#.00"
   }
 
 }
