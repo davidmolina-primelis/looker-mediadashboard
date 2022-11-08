@@ -123,6 +123,8 @@ view: fct_ad_report_all_sources {
     value_format: "#,##0"
   }
 
+  ### check this measure ###
+
   measure:averge_order_value {
     type: number
     sql: 1.0*${total_conversion_value}/nullif(${total_impressions},0) ;;
@@ -151,6 +153,7 @@ view: fct_ad_report_all_sources {
     value_format: "$0.00"
     }
 
+   ### check this measure ###
   measure: Conv {
     label: "Conv %"
     type: number
