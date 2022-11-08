@@ -144,4 +144,9 @@ view: fct_ad_report_all_sources {
     value_format:"$#.00"
   }
 
+   measure:cpa {
+    type: number
+    sql: 1.0*${total_cost}/nullif(${total_conversions},0) ;;
+    value_format: "$0.00"
+    }
 }
