@@ -56,7 +56,10 @@ view: fct_ad_report_all_sources {
     sql: ${TABLE}.source ;;
   }
 
+  ### Period Analysis:
 
+  # The common parameters and filters are located in the parameters view file.
+  # This dimension creates the interval related to the current period and the previous period.
   dimension: current_vs_previous {
     hidden: yes
     type: string
@@ -66,6 +69,7 @@ view: fct_ad_report_all_sources {
             end;;
   }
 
+# This dimension creates the interval related to the current period and the previous year period.
   dimension: current_year_vs_previous_year {
     hidden: yes
     type: string
@@ -75,6 +79,9 @@ view: fct_ad_report_all_sources {
            end ;;
   }
 
+
+  # This dimension is the one that should be selected in the explore/dashboard tile that's depend on the user's choice will show
+  # the comparison between Previous Period or Previous Year Same period.
   dimension: selected_period {
     view_label: "Parameters"
     type: string
@@ -85,6 +92,7 @@ view: fct_ad_report_all_sources {
      ;;
   }
 
+  ###---- End of Period Analysis
 
   measure: count {
     type: count
@@ -117,6 +125,7 @@ view: fct_ad_report_all_sources {
     label: "Conversion Value"
     type: sum
     sql: ${TABLE}.conversion_value ;;
+    value_format_name: usd_0
   }
 
   measure: total_conversions {
@@ -125,48 +134,48 @@ view: fct_ad_report_all_sources {
     value_format: "#,##0"
   }
 
-  ### check this measure ###
-
   measure:average_order_value {
     type: number
-    sql: 1.0*${total_conversion_value}/nullif(${total_impressions},0) ;;
+    sql: 1.0*${total_conversion_value}/nullif(${total_conversions},0) ;;
+    value_format_name: usd
   }
-
-  # measure: aov {
-  #   type: sum
-  #   sql: 1.0*${conversion_value}/nullif(${conversions},0) ;;
-  # }
 
   measure:return_on_ad_spend {
     label: "ROAS"
     type: number
     sql: 1.0*${total_conversion_value}/nullif(${total_cost},0) ;;
     value_format: "0.##"
+
+    value_format_name: decimal_2
+
   }
 
   measure:cpm {
+    label: "CPM"
     type: number
     sql: 1.0*${total_cost}/nullif(${total_impressions},0)*1000 ;;
     value_format:"$#.00"
   }
 
   measure: cpc {
+    label: "CPC"
     type: number
     sql: 1.0*${total_cost}/nullif(${total_clicks},0) ;;
     value_format:"$#.00"
   }
 
-   measure: CPA {
+   measure: cpa {
+    label: "CPA"
     type: number
     sql: 1.0*${total_cost}/nullif(${total_conversions},0) ;;
     value_format: "$0.00"
     }
 
-   ### check this measure ###
-  measure: Conv {
+  measure: conv {
     label: "Conv %"
     type: number
-    sql: 1.0*${total_conversion_value}/nullif(${total_clicks},0);;
+    sql: 1.0*${total_conversions}/nullif(${total_clicks},0);;
+    value_format_name: percent_2
   }
 
 }
