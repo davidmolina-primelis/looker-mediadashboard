@@ -31,11 +31,13 @@ view: fct_ad_report_all_sources {
   }
 
   dimension: conversion_value {
+    label: "CA"
     type: number
     sql: ${TABLE}.conversion_value ;;
   }
 
   dimension: conversions {
+    label: "Conv"
     type: number
     sql: ${TABLE}.conversions ;;
   }
@@ -82,12 +84,14 @@ view: fct_ad_report_all_sources {
   }
 
   measure: CPA {
+    description: "coût par acquisition"
     type: number
     sql: ${total_conversions}/${total_clicks}
     value_format_name :  usd;;
   }
 
   measure: CPC {
+    description: "coût par clic"
     type: number
     sql: ${total_cost}/${total_clicks}
       value_format_name :  usd;;
