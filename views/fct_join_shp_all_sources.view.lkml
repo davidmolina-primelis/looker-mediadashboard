@@ -17,6 +17,7 @@ view: fct_join_shp_all_sources {
       date,
       week,
       month,
+      month_name,
       quarter,
       year
     ]

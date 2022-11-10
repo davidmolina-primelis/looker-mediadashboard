@@ -16,6 +16,7 @@ view: fct_ad_report_all_sources {
       date,
       week,
       month,
+      month_name,
       quarter,
       year,
       time
@@ -140,6 +141,7 @@ view: fct_ad_report_all_sources {
     label: "ROAS"
     type: number
     sql: 1.0*${total_conversion_value}/nullif(${total_cost},0) ;;
+    value_format: "0.##"
   }
 
   measure:cpm {
