@@ -10,6 +10,8 @@ view: fct_ad_report_all_sources {
   }
 
   dimension_group: date {
+    label: "Date"
+    description: "Date (day, month, year)"
     type: time
     timeframes: [
       raw,
@@ -27,31 +29,43 @@ view: fct_ad_report_all_sources {
   }
 
   dimension: clicks {
+    label: "Ad Clicks"
+    description: "Clicks on media ads"
     type: number
     sql: ${TABLE}.clicks ;;
   }
 
   dimension: conversion_value {
+    label: "Ad Revenues"
+    description: "Conversions value from media ads"
     type: number
     sql: ${TABLE}.conversion_value ;;
   }
 
   dimension: conversions {
+    label: "Ad Conversions"
+    description: "Conversions from media ads"
     type: number
     sql: ${TABLE}.conversions ;;
   }
 
   dimension: cost {
+    label: "Ad Cost"
+    description: "Cost from media ads"
     type: number
     sql: ${TABLE}.cost ;;
   }
 
   dimension: impressions {
+    label: "Ad Impressions"
+    description: "Impressions from media ads"
     type: number
     sql: ${TABLE}.impressions ;;
   }
 
   dimension: source {
+    label: "Source - Paid media"
+    description: "Paid media acquistion source"
     type: string
     sql: ${TABLE}.source ;;
   }
@@ -61,6 +75,8 @@ view: fct_ad_report_all_sources {
   # The common parameters and filters are located in the parameters view file.
   # This dimension creates the interval related to the current period and the previous period.
   dimension: current_vs_previous {
+    label: "Current vs Previous Period"
+    description: "Compare current date period versus previous period"
     hidden: yes
     type: string
     sql: case when {% condition parameters.choose_date %} timestamp(${date_date}) {% endcondition %} then 'Current Period'
@@ -71,6 +87,8 @@ view: fct_ad_report_all_sources {
 
 # This dimension creates the interval related to the current period and the previous year period.
   dimension: current_year_vs_previous_year {
+    label: "Current Year vs Previous Year"
+    description: "Compare current year period versus year"
     hidden: yes
     type: string
     sql:  case when {% condition parameters.choose_date %} timestamp(${date_date}) {% endcondition %} then 'Current Year '
@@ -84,6 +102,7 @@ view: fct_ad_report_all_sources {
   # the comparison between Previous Period or Previous Year Same period.
   dimension: selected_period {
     view_label: "Parameters"
+    description: "Select date comparison type"
     type: string
     sql: {% if parameters.previous_comparison._parameter_value == 'previous_period'%} ${current_vs_previous}
           {% elsif parameters.previous_comparison._parameter_value == 'previous_year' %} ${current_year_vs_previous_year}
@@ -95,46 +114,61 @@ view: fct_ad_report_all_sources {
   ###---- End of Period Analysis
 
   measure: count {
+    label: "Count"
+    description: "Count total occurence of a field"
     type: count
     drill_fields: []
   }
 
   measure: total_impressions {
+    label: "Total Impressions"
+    description: "Sum of Total impressions"
     type: sum
     sql: ${TABLE}.impressions ;;
   }
 
   measure: total_cost {
+    label: "Total Cost"
+    description: "Sum of Total Cost"
     type: sum
     sql: ${TABLE}.cost ;;
     value_format_name: usd_0
   }
 
   measure: total_clicks {
+    label: "Total Clicks"
+    description: "Sum of Total Clicks"
     type: sum
     sql: ${TABLE}.clicks ;;
   }
 
   measure: click_through_rate {
+    label: "CTR (Click Through Rate)"
+    description: "Clicks / Impressions"
     type: number
     sql: 1.0*${total_clicks}/nullif(${total_impressions},0) ;;
     value_format: "0.00%"
   }
 
   measure: total_conversion_value {
-    label: "Conversion Value"
+    label: "Total Revenues"
+    description: "Sum of Media conversions revenues"
     type: sum
     sql: ${TABLE}.conversion_value ;;
     value_format_name: usd_0
   }
 
   measure: total_conversions {
+    label: "Total Conversions"
+    description: "Sum of Media conversions"
     type: sum
     sql: ${TABLE}.conversions ;;
     value_format: "#,##0"
   }
 
   measure:average_order_value {
+    label: "Average Order Value"
+    description: " Total Revenues / Total Conversions"
     type: number
     sql: 1.0*${total_conversion_value}/nullif(${total_conversions},0) ;;
     value_format_name: usd
@@ -142,6 +176,7 @@ view: fct_ad_report_all_sources {
 
   measure:return_on_ad_spend {
     label: "ROAS"
+    description: " Total Revenues / Total Costs"
     type: number
     sql: 1.0*${total_conversion_value}/nullif(${total_cost},0) ;;
     value_format: "0.##"
@@ -152,6 +187,7 @@ view: fct_ad_report_all_sources {
 
   measure:cpm {
     label: "CPM"
+    description: " Total Cost / Total Impressions"
     type: number
     sql: 1.0*${total_cost}/nullif(${total_impressions},0)*1000 ;;
     value_format:"$#.00"
@@ -159,6 +195,7 @@ view: fct_ad_report_all_sources {
 
   measure: cpc {
     label: "CPC"
+    description: " Total Cost / Total Clicks"
     type: number
     sql: 1.0*${total_cost}/nullif(${total_clicks},0) ;;
     value_format:"$#.00"
@@ -166,6 +203,7 @@ view: fct_ad_report_all_sources {
 
    measure: cpa {
     label: "CPA"
+    description: " Total Cost / Total Conversions"
     type: number
     sql: 1.0*${total_cost}/nullif(${total_conversions},0) ;;
     value_format: "$0.00"
@@ -173,6 +211,7 @@ view: fct_ad_report_all_sources {
 
   measure: conv {
     label: "Conv %"
+    description: " Total Conversions / Total Clicks"
     type: number
     sql: 1.0*${total_conversions}/nullif(${total_clicks},0);;
     value_format_name: percent_2
