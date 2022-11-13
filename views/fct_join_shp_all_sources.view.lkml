@@ -223,6 +223,7 @@ view: fct_join_shp_all_sources {
   }
 
   measure: margin {
+    label: "Margin"
     type: number
     value_format_name: usd_0
     sql: 1.0*${total_ca_shp}/nullif(${total_cost},0) ;;
