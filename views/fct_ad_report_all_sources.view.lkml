@@ -51,8 +51,26 @@ view: fct_ad_report_all_sources {
   }
 
   dimension: source {
+    order_by_field: rank_source
     type: string
     sql: ${TABLE}.source ;;
+  }
+
+  dimension: rank_source {
+    type: number
+    hidden: yes
+    sql: CASE WHEN ${source}='google ads' then 1
+              WHEN ${source}='snapchat ads' then 2
+              WHEN ${source}='facebook ads' then 3
+              WHEN ${source}='youtube' then 4
+              WHEN ${source}='pinterest ads' then 5
+              WHEN ${source}='tiktok ads' then 6
+              WHEN ${source}='influence' then 7
+              WHEN ${source}='Adjustement line for revenue' then 8
+              WHEN ${source}='adjustement shipping' then 9
+              WHEN ${source}='Grand total KPIs' then 10
+              WHEN ${source}='Grand total' then 11
+          END;;
   }
 
   ### Period Analysis:
