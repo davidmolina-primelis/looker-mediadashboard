@@ -5,7 +5,7 @@ view: shp_sales {
   dimension: pk {
     hidden: yes
     primary_key: yes
-    sql: concat(${line_item_id},${partition_date}) ;;
+    sql: concat(${line_item_id},${date_date}) ;;
   }
 
   dimension: customer_city {
@@ -81,7 +81,14 @@ view: shp_sales {
     label : "Customer lifetime duration"
     description : "Duration between first purchase and last purchase"
     type: string
-    sql: ${TABLE}.customer_lifetime_duration ;;
+    sql:cast( ${TABLE}.customer_lifetime_duration as INT) ;;
+  }
+
+  dimension: lifetime_tier {
+    type: tier
+    tiers: [0,30,60,90]
+    sql: ${customer_lifetime_duration} ;;
+    style: integer
   }
 
   dimension: data_source_name {
@@ -91,8 +98,8 @@ view: shp_sales {
     sql: ${TABLE}.data_source_name ;;
   }
 
-  dimension_group: partition {
-    group_label : "Partition"
+  dimension_group: date {
+    label: ""
     description : "Partition for Date"
     type: time
     timeframes: [raw,date,month,month_name,week,year]

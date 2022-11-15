@@ -10,7 +10,7 @@ view: fct_join_shp_all_sources {
   }
 
   dimension_group: date {
-    label: "Date"
+   label: ""
     description: "Date (day, month, year)"
     type: time
     timeframes: [
@@ -28,6 +28,7 @@ view: fct_join_shp_all_sources {
   }
 
   dimension: clicks {
+    hidden: yes
     label: "Ad Clicks"
     description: "Clicks on media ads"
     type: number
@@ -69,12 +70,18 @@ view: fct_join_shp_all_sources {
     sql: ${TABLE}.source ;;
   }
 
+  dimension: is_ytd {
+    type: yesno
+    sql: ${date_date}>= DATE_TRUNC(CURRENT_DATE(), YEAR) and ${date_date}<=CURRENT_DATE() ;;
+  }
+
 
   ### Period Analysis:
 
   # The common parameters and filters are located in the parameters view file.
   # This dimension creates the interval related to the current period and the previous period.
   dimension: current_vs_previous {
+    view_label: "Parameters"
     hidden: yes
     type: string
     sql: case when {% condition parameters.choose_date %} timestamp(${date_date}) {% endcondition %} then 'Current Period'
@@ -83,11 +90,13 @@ view: fct_join_shp_all_sources {
             end;;
   }
 
+
 # This dimension creates the interval related to the current period and the previous year period.
   dimension: current_year_vs_previous_year {
-    hidden: yes
+    view_label: "Parameters"
+    hidden: no
     type: string
-    sql:  case when {% condition parameters.choose_date %} timestamp(${date_date}) {% endcondition %} then 'Current Year '
+    sql:  case when {% condition parameters.choose_date %} timestamp(${date_date}) {% endcondition %} then 'Current Year'
                 when ${date_date} > (date_sub(date({% date_start parameters.choose_date %}),INTERVAL 1 year ))
                  and ${date_date} <= (date_sub(date({% date_end parameters.choose_date %}),INTERVAL 1 year )) then 'Previous Year'
            end ;;
