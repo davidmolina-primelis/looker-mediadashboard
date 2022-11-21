@@ -71,8 +71,16 @@ view: fct_ad_report_all_sources {
     sql: ${TABLE}.source ;;
   }
 
+  dimension: source_no_adjustment {
+    hidden: yes
+    description: "It was necessary for a specific tile in Ecommerce Overview Dashboard"
+    type: string
+    sql: ${TABLE}.source ;;
+  }
+
   dimension: rank_source {
     type: number
+    description: "It's a field that is used to sort on a specific way the dimension called 'source'"
     hidden: yes
     sql: CASE WHEN ${source}='google ads' then 1
               WHEN ${source}='snapchat ads' then 2
