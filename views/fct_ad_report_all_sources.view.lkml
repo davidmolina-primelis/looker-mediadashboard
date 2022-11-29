@@ -1,6 +1,5 @@
 view: fct_ad_report_all_sources {
-  sql_table_name: `positive-harbor-329408.mart_dossier.fct_ad_report_all_sources`
-    ;;
+  sql_table_name: `positive-harbor-329408.mart_dossier.fct_ad_report_all_sources`;;
 
   dimension: pk {
     hidden: yes
