@@ -1,14 +1,6 @@
 view: ga_ecommerce {
-  derived_table: {
-    sql: select * from `positive-harbor-329408.source_supermetrics.GA_ECOMMERCE_*`
-      ;;
-  }
-
-
-  measure: count {
-    type: count
-    drill_fields: [detail*]
-  }
+  view_label: "Google Analytics - Ecommerce"
+  sql_table_name: `positive-harbor-329408.source_supermetrics.GA_ECOMMERCE_*`;;
 
   dimension: data_source_name {
     type: string
@@ -151,36 +143,4 @@ view: ga_ecommerce {
     sql: ${TABLE}.unique_purchases ;;
   }
 
-  set: detail {
-    fields: [
-      data_source_name,
-      date,
-      product_brand,
-      product_category_hierarchy,
-      product_list_name,
-      product_list_position,
-      product_name,
-      product_sku,
-      view_name,
-      view_id,
-      item_quantity,
-      item_revenue,
-      local_item_revenue,
-      local_product_refund_amount,
-      product_adds_to_cart,
-      product_checkouts,
-      product_detail_views,
-      product_list_clicks,
-      product_list_views,
-      product_refund_amount,
-      product_refunds,
-      product_removes_from_cart,
-      product_revenue_per_purchase,
-      quantity_added_to_cart,
-      quantity_checked_out,
-      quantity_refunded,
-      quantity_removed_from_cart,
-      unique_purchases
-    ]
-  }
 }

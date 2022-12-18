@@ -1,8 +1,6 @@
 view: snapchat_ads {
-  derived_table: {
-    sql: select * from `positive-harbor-329408.source_supermetrics.SCM_SNAPCHAT_STORY_OPEN_SWIPE_UP_*` limit 10
-      ;;
-  }
+  view_label: "Snapchat Ads"
+  sql_table_name: `positive-harbor-329408.source_supermetrics.SCM_SNAPCHAT_STORY_OPEN_SWIPE_UP_*`;;
 
   dimension: pk {
     hidden: yes

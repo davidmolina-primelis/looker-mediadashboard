@@ -1,4 +1,5 @@
 view: bing_ads {
+  view_label: "Bing Ads"
   sql_table_name: `positive-harbor-329408.source_supermetrics.BINGADS_AD_*`;;
 
   dimension: account_id {

@@ -1,8 +1,6 @@
 view: youtube_ads {
-  derived_table: {
-    sql: select * from `positive-harbor-329408.source_youtube.GOOGLEADS_AD_*` limit 10
-      ;;
-  }
+  view_label: "Youtube Ads"
+  sql_table_name: `positive-harbor-329408.source_youtube.GOOGLEADS_AD_*`;;
 
   dimension: account_name {
     type: string

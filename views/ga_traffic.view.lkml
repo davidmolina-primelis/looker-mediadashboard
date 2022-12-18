@@ -1,8 +1,6 @@
 view: ga_traffic {
-  derived_table: {
-    sql: select * from `positive-harbor-329408.source_supermetrics.GA_TRAFFIC_*`
-      ;;
-  }
+  view_label: "Google Analytics - Traffic"
+  sql_table_name: `positive-harbor-329408.source_supermetrics.GA_TRAFFIC_*`;;
 
   measure: count {
     type: count
