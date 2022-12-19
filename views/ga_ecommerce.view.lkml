@@ -1,5 +1,6 @@
 view: ga_ecommerce {
-    sql_table_name: `positive-harbor-329408.source_supermetrics.GA_ECOMMERCE_*` ;;
+  view_label: "Google Analytics - Ecommerce"
+  sql_table_name: `positive-harbor-329408.source_supermetrics.GA_ECOMMERCE_*`;;
 
   dimension: data_source_name {
     type: string
@@ -141,6 +142,7 @@ view: ga_ecommerce {
     type: number
     sql: ${TABLE}.unique_purchases ;;
   }
+
 
   measure: count {
     type: count

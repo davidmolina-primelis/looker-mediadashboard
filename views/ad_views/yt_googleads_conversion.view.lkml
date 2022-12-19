@@ -1,8 +1,6 @@
 view: yt_googleads_conversion {
-  derived_table: {
-    sql: select * from `positive-harbor-329408.source_youtube.GOOGLEADS_CONVERSION_*`
-      ;;
-  }
+  view_label: "Youtube Conversion"
+  sql_table_name: `positive-harbor-329408.source_youtube.GOOGLEADS_CONVERSION_*`;;
 
   measure: count {
     type: count
