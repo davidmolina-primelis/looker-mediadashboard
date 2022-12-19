@@ -1,6 +1,6 @@
 connection: "dossier_-_bigquery"
 
-include: "/views/*.lkml"
+include: "/views/*/*.lkml"
 include: "/explores/*.explore"
 #include: "/dashboards/*"
 # include: "/**/*.view.lkml"                 # include all views in this project

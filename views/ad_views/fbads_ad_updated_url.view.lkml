@@ -1,6 +1,8 @@
+include: "/views/common_metrics.view"
 view: fbads_ad_updated_url {
   sql_table_name: `positive-harbor-329408.mart_dossier.FBADS_AD_updated_url`
     ;;
+    extends: [common_metrics]
 
   dimension: account_id {
     type: string

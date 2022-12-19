@@ -325,75 +325,11 @@ view: googleads_ad {
 
   measure: count {
     type: count
-    drill_fields: [detail*]
   }
 
-  set: detail {
-    fields: [
-      account_name,
-      ad_approval_status,
-      ad_group_id,
-      ad_group_labels,
-      ad_group_name,
-      ad_group_status,
-      ad_id,
-      ad_labels,
-      ad_status,
-      ad_type,
-      campaign_id,
-      campaign_labels,
-      campaign_name,
-      campaign_status,
-      currency,
-      custom_url_parameters,
-      data_source_name,
-      date,
-      description,
-      description_1,
-      description_2,
-      destination_url,
-      device,
-      device_preference,
-      display_url,
-      final_url,
-      headline,
-      headline_part_1,
-      headline_part_2,
-      headline_part_3,
-      image_ad_name,
-      image_ad_url,
-      image_creative_image_height,
-      image_creative_image_width,
-      long_headline,
-      network,
-      network_with_search_partners,
-      path_1,
-      path_2,
-      slot,
-      account_id,
-      short_headline,
-      text_ad_description_1,
-      text_ad_description_2,
-      tracking_url_template,
-      active_view_impressions,
-      average_position,
-      clicks,
-      conversions,
-      conversion_value,
-      cost,
-      cost_eur,
-      cost_gbp,
-      cost_usd,
-      engagements,
-      gmail_forwards,
-      gmail_saves,
-      gmail_secondary_clicks,
-      impressions,
-      interactions,
-      video_impressions,
-      video_quartile_100_views,
-      video_views,
-      view_through_conversions
-    ]
+  set: googleads_ad {
+    fields: []
   }
+
+
 }

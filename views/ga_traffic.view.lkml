@@ -1,13 +1,6 @@
 view: ga_traffic {
-  derived_table: {
-    sql: select * from `positive-harbor-329408.source_supermetrics.GA_TRAFFIC_*`
-      ;;
-  }
+    sql_table_name: `positive-harbor-329408.source_supermetrics.GA_TRAFFIC_*` ;;
 
-  measure: count {
-    type: count
-    drill_fields: [detail*]
-  }
 
   dimension: ad_content {
     type: string
@@ -240,54 +233,8 @@ view: ga_traffic {
     sql: ${TABLE}.users ;;
   }
 
-  set: detail {
-    fields: [
-      ad_content,
-      campaign_name,
-      channel_grouping,
-      data_source_name,
-      date,
-      full_referrer,
-      keyword,
-      medium,
-      view_name,
-      view_id,
-      referral_path,
-      source,
-      ad_clicks,
-      ad_cost,
-      bounces,
-      goal_10_completions,
-      goal_11_completions,
-      goal_12_completions,
-      goal_13_completions,
-      goal_14_completions,
-      goal_15_completions,
-      goal_16_completions,
-      goal_17_completions,
-      goal_18_completions,
-      goal_19_completions,
-      goal_1_completions,
-      goal_20_completions,
-      goal_2_completions,
-      goal_3_completions,
-      goal_4_completions,
-      goal_5_completions,
-      goal_6_completions,
-      goal_7_completions,
-      goal_8_completions,
-      goal_9_completions,
-      goal_completions_all,
-      goal_starts_all,
-      goal_value_all,
-      impressions,
-      pageviews,
-      session_duration,
-      sessions,
-      total_value,
-      transaction_revenue,
-      transactions,
-      users
-    ]
+  measure: count {
+    type: count
   }
+
 }

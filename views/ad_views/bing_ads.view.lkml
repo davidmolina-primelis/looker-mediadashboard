@@ -1,17 +1,29 @@
+include: "/views/common_metrics.view"
 view: bing_ads {
+
+  extends: [common_metrics]
   sql_table_name: `positive-harbor-329408.source_supermetrics.BINGADS_AD_*`;;
 
+  dimension: pk {
+    hidden: no
+    primary_key: yes
+    sql: concat(${ad_id},${date_date},${device_os},${device_type},${bid_match_type},${delivered_match_type},${top_vs_other}) ;;
+  }
+
   dimension: account_id {
+    group_label: "Account"
     type: string
     sql: ${TABLE}.account_id ;;
   }
 
   dimension: account_name {
+    group_label: "Account"
     type: string
     sql: ${TABLE}.account_name ;;
   }
 
   dimension: account_number {
+    group_label: "Account"
     type: string
     sql: ${TABLE}.account_number ;;
   }
@@ -27,21 +39,26 @@ view: bing_ads {
   }
 
   dimension: ad_group_id {
+    group_label: "AD Group"
     type: string
     sql: ${TABLE}.ad_group_id ;;
   }
 
   dimension: ad_group_labels {
+    group_label: "AD Group"
     type: string
     sql: ${TABLE}.ad_group_labels ;;
   }
 
   dimension: ad_group_name {
+    group_label: "AD Group"
     type: string
     sql: ${TABLE}.ad_group_name ;;
   }
 
   dimension: ad_group_status {
+    group_label: "AD Group"
+    description: "fshjkfdsnjkgsdgnglsgjdldfs"
     type: string
     sql: ${TABLE}.ad_group_status ;;
   }
@@ -117,6 +134,7 @@ view: bing_ads {
   }
 
   dimension_group: date {
+    label: ""
     type: time
     timeframes: [date,month,week,year]
     datatype: date
@@ -169,6 +187,7 @@ view: bing_ads {
   }
 
   dimension: utm_medium {
+    hidden: yes
     type: string
     sql: ${TABLE}.utm_medium ;;
   }
