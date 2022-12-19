@@ -1,8 +1,5 @@
 view: tiktok_ads {
-  derived_table: {
-    sql: select * from `positive-harbor-329408.source_supermetrics.TIK_AD_*` Limit 10
-      ;;
-  }
+  sql_table_name: `positive-harbor-329408.source_supermetrics.TIK_AD_*`;;
 
   dimension: pk {
     hidden: yes

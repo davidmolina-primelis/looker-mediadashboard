@@ -961,19 +961,7 @@ view: fbads_ad_updated_url {
 
   measure: count {
     type: count
-    drill_fields: [detail*]
   }
 
-  # ----- Sets of fields for drilling ------
-  set: detail {
-    fields: [
-      creative_name,
-      data_source_name,
-      promoted_post_name,
-      account_name,
-      ad_name,
-      ad_group_name,
-      campaign_name
-    ]
-  }
+
 }

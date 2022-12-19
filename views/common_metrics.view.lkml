@@ -189,7 +189,14 @@ view: common_metrics {
   }
 
   set: not_fbads_metrics {
-    fields: [ctr,click_through_rate,total_conversion_value,total_conversions,average_order_value,return_on_ad_spend,cpc,cpa,conv]
+    fields: [click_through_rate,
+             total_conversion_value,
+             total_conversions,
+             average_order_value,
+             return_on_ad_spend,
+             cpc,
+             cpa,
+             conv]
   }
 
 
