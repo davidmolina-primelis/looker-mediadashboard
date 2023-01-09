@@ -1,7 +1,6 @@
 include: "/views/common_metrics.view"
 view: fbads_ad_updated_url {
-  sql_table_name: `positive-harbor-329408.mart_dossier.FBADS_AD_updated_url`
-    ;;
+  sql_table_name: `positive-harbor-329408.mart_dossier.FBADS_AD_updated_url`;;
     extends: [common_metrics]
 
   dimension: account_id {
@@ -392,6 +391,15 @@ view: fbads_ad_updated_url {
   dimension: campaign_name {
     type: string
     sql: ${TABLE}.campaign_name ;;
+  }
+
+  dimension: campaign_type {
+    type: string
+    sql: case when ${campaign_name} like '%TOFU%' then 'TOFU'
+              when ${campaign_name} like '%MOFU%' then 'MOFU'
+              when ${campaign_name} like '%BOFU%' then 'BOFU'
+              else null
+          end;;
   }
 
   dimension: campaign_objective {
@@ -961,6 +969,154 @@ view: fbads_ad_updated_url {
 
   measure: count {
     type: count
+  }
+
+  ### Period Analysis:
+
+  # The common parameters and filters are located in the parameters view file.
+  # This dimension creates the interval related to the current period and the previous period.
+  dimension: current_vs_previous {
+    label: "Current vs Previous Period"
+    description: "Compare current date period versus previous period"
+    hidden: yes
+    type: string
+    sql: case when {% condition parameters.choose_date %} timestamp(${date_date}) {% endcondition %} then 'Current Period'
+                when ${date_date} > (date_sub(date({% date_start parameters.choose_date %}),INTERVAL ${parameters.days_days_in_period} day ))
+                and ${date_date} <= (date_sub(date({% date_end parameters.choose_date %}),INTERVAL ${parameters.days_days_in_period} day )) then 'Previous Period'
+            end;;
+  }
+
+# This dimension creates the interval related to the current period and the previous year period.
+  dimension: current_year_vs_previous_year {
+    label: "Current Year vs Previous Year"
+    description: "Compare current year period versus year"
+    hidden: yes
+    type: string
+    sql:  case when {% condition parameters.choose_date %} timestamp(${date_date}) {% endcondition %} then 'Current Year '
+                when ${date_date} > (date_sub(date({% date_start parameters.choose_date %}),INTERVAL 1 year ))
+                 and ${date_date} <= (date_sub(date({% date_end parameters.choose_date %}),INTERVAL 1 year )) then 'Previous Year'
+           end ;;
+  }
+
+
+  # This dimension is the one that should be selected in the explore/dashboard tile that's depend on the user's choice will show
+  # the comparison between Previous Period or Previous Year Same period.
+  dimension: selected_period {
+    view_label: "Parameters"
+    description: "Select date comparison type"
+    type: string
+    sql: {% if parameters.previous_comparison._parameter_value == 'previous_period'%} ${current_vs_previous}
+          {% elsif parameters.previous_comparison._parameter_value == 'previous_year' %} ${current_year_vs_previous_year}
+          {% else %} ${current_vs_previous}
+          {% endif %}
+     ;;
+  }
+
+  ### Measures:
+
+  measure: total_cost_usd {
+    #FB Ads
+    label: "Total Cost USD"
+    description: "Sum of Total Cost"
+    type: sum
+    sql: ${TABLE}.cost_usd ;;
+    value_format_name: usd_0
+  }
+
+  measure: total_outbound_clicks {
+    #FB Ads
+    type: sum
+    sql: ${TABLE}.outbound_clicks ;;
+  }
+
+  measure: ctr {
+    label: "CTR"
+    type: number
+    sql: 1.0*${total_outbound_clicks}/nullif(${total_impressions},0) ;;
+    value_format_name: percent_2
+  }
+
+  measure: outbound_click_through_rate {
+    #FB Ads
+    label: "CTR (Outbound Click Through Rate)"
+    description: "Clicks / Impressions"
+    type: number
+    sql: 1.0*${total_outbound_clicks}/nullif(${total_impressions},0) ;;
+    value_format: "0.00%"
+  }
+
+  measure: total_conversion_value_fbads{
+    #FB Ads
+    description: "Sum of Media conversions revenues"
+    type: sum
+    sql: ${TABLE}.offsite_conversion_value_fb_pixel_purchase ;;
+    value_format_name: usd_0
+  }
+
+  measure: total_conversions_fbads {
+    #FB Ads
+    label: "Total Conversions"
+    description: "Sum of Media conversions"
+    type: sum
+    sql: ${TABLE}.offsite_conversions_fb_pixel_purchase ;;
+    value_format: "#,##0"
+  }
+
+  measure:average_order_value_fbads {
+    #FB Ads
+    label: "Average Order Value"
+    description: " Total Revenues / Total Conversions"
+    type: number
+    sql: 1.0*${total_conversion_value_fbads}/nullif(${total_conversions_fbads},0) ;;
+    value_format_name: usd
+  }
+
+  measure:return_on_ad_spend_fbads {
+    #FB Ads
+    label: "ROAS"
+    description: " Total Revenues / Total Costs"
+    type: number
+    sql: 1.0*${total_conversion_value_fbads}/nullif(${total_cost_usd},0) ;;
+    value_format: "0.##"
+  }
+
+  measure: cpc_fbads {
+    #FB Ads
+    label: "CPC"
+    description: " Total Cost / Total Outbound Clicks"
+    type: number
+    sql: 1.0*${total_cost_usd}/nullif(${total_outbound_clicks},0) ;;
+    value_format:"$#.00"
+  }
+
+  measure: cpa_fbads {
+    #FB Ads
+    label: "CPA"
+    description: " Total Cost / Total Conversions"
+    type: number
+    sql: 1.0*${total_cost_usd}/nullif(${total_conversions_fbads},0) ;;
+    value_format: "$0.00"
+  }
+
+  measure: conv_fbads {
+    #FB Ads
+    label: "Conv %"
+    description: " Total Conversions / Total Clicks"
+    type: number
+    sql: 1.0*${total_conversions_fbads}/nullif(${total_outbound_clicks},0);;
+    value_format_name: percent_2
+  }
+
+  set: not_fbads_metrics {
+    fields: [total_clicks,
+      click_through_rate,
+      total_conversion_value,
+      total_conversions,
+      average_order_value,
+      return_on_ad_spend,
+      cpc,
+      cpa,
+      conv]
   }
 
 

@@ -1,11 +1,14 @@
+include: "/views/common_metrics.view"
 view: tiktok_ads {
+  view_label: "TikTok Ads"
   sql_table_name: `positive-harbor-329408.source_supermetrics.TIK_AD_*`;;
+  extends: [common_metrics]
 
   dimension: pk {
     hidden: yes
     primary_key: yes
     type: string
-    sql: concat(${ad_id},${date}) ;;
+    sql: concat(${ad_id},${date_raw}) ;;
   }
 
   dimension: ad_group_id {
@@ -205,6 +208,15 @@ view: tiktok_ads {
     sql: ${TABLE}.campaign_name ;;
   }
 
+  dimension: campaign_type {
+    type: string
+    sql:  case when ${campaign_name} like '%TOFU%' then 'TOFU'
+              when ${campaign_name} like '%MOFU%' then 'MOFU'
+              when ${campaign_name} like '%BOFU%' then 'BOFU'
+              else null
+          end;;
+  }
+
   dimension: campaign_objective_type {
     type: string
     sql: ${TABLE}.campaign_objective_type ;;
@@ -230,8 +242,8 @@ view: tiktok_ads {
     sql: ${TABLE}.data_source_name ;;
   }
 
-  dimension: date {
-    type: date
+  dimension_group: date {
+    type: time
     datatype: date
     sql: ${TABLE}.date ;;
   }
@@ -847,5 +859,80 @@ view: tiktok_ads {
     type: number
     sql: ${TABLE}.web_add_to_cart_events ;;
   }
+
+  ### Period Analysis:
+
+  # The common parameters and filters are located in the parameters view file.
+  # This dimension creates the interval related to the current period and the previous period.
+  dimension: current_vs_previous {
+    label: "Current vs Previous Period"
+    description: "Compare current date period versus previous period"
+    hidden: yes
+    type: string
+    sql: case when {% condition parameters.choose_date %} timestamp(${date_date}) {% endcondition %} then 'Current Period'
+                when ${date_date} > (date_sub(date({% date_start parameters.choose_date %}),INTERVAL ${parameters.days_days_in_period} day ))
+                and ${date_date} <= (date_sub(date({% date_end parameters.choose_date %}),INTERVAL ${parameters.days_days_in_period} day )) then 'Previous Period'
+            end;;
+  }
+
+# This dimension creates the interval related to the current period and the previous year period.
+  dimension: current_year_vs_previous_year {
+    label: "Current Year vs Previous Year"
+    description: "Compare current year period versus year"
+    hidden: yes
+    type: string
+    sql:  case when {% condition parameters.choose_date %} timestamp(${date_date}) {% endcondition %} then 'Current Year '
+                when ${date_date} > (date_sub(date({% date_start parameters.choose_date %}),INTERVAL 1 year ))
+                 and ${date_date} <= (date_sub(date({% date_end parameters.choose_date %}),INTERVAL 1 year )) then 'Previous Year'
+           end ;;
+  }
+
+
+  # This dimension is the one that should be selected in the explore/dashboard tile that's depend on the user's choice will show
+  # the comparison between Previous Period or Previous Year Same period.
+  dimension: selected_period {
+    view_label: "Parameters"
+    description: "Select date comparison type"
+    type: string
+    sql: {% if parameters.previous_comparison._parameter_value == 'previous_period'%} ${current_vs_previous}
+          {% elsif parameters.previous_comparison._parameter_value == 'previous_year' %} ${current_year_vs_previous_year}
+          {% else %} ${current_vs_previous}
+          {% endif %}
+     ;;
+  }
+
+  ### Measures:
+
+  measure: total_revenue_tiktok {
+    label: "Total Revenues"
+    type: sum
+    sql: ${TABLE}.total_complete_payment_value ;;
+    value_format_name: usd_0
+  }
+
+  measure:return_on_ad_spend_tiktok {
+    label: "ROAS"
+    description: " Total Revenues / Total Costs"
+    type: number
+    sql: 1.0*${total_revenue_tiktok}/nullif(${total_cost},0) ;;
+    value_format: "0.##"
+  }
+
+  measure:average_order_value_tiktok {
+    label: "Average Order Value"
+    description: " Total Revenues / Total Conversions"
+    type: number
+    sql: 1.0*${total_revenue_tiktok}/nullif(${total_conversions},0) ;;
+    value_format_name: usd
+  }
+
+  set: not_tiktok_metrics {
+    fields: [
+      total_conversion_value,
+      return_on_ad_spend,
+      average_order_value
+      ]
+  }
+
 
 }

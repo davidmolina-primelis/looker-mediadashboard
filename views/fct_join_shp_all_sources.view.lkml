@@ -82,70 +82,7 @@ view: fct_join_shp_all_sources {
      ;;
   }
 
-  dimension: date_reference {
-    view_label: "Parameters"
-    type: string
-    sql: {% if parameters.previous_comparison._parameter_value == 'previous_period'%}
-          case when {% condition parameters.choose_date %} timestamp(${date_date}) {% endcondition %} then
-                concat(' From ',FORMAT_DATE("%d-%b-%Y", TIMESTAMP ${start_date_current_period_year})
-                      ,' To ',FORMAT_DATE("%d-%b-%Y", TIMESTAMP ${end_date_current_period_year}))
-                when ${date_date} > (date_sub(date({% date_start parameters.choose_date %}),INTERVAL ${parameters.days_days_in_period} day ))
-                and ${date_date} <= (date_sub(date({% date_end parameters.choose_date %}),INTERVAL ${parameters.days_days_in_period} day )) then
-                concat(' From ',FORMAT_TIMESTAMP("%d-%b-%Y", TIMESTAMP ${start_date_previous_period})
-                        ,' To ',FORMAT_TIMESTAMP("%d-%b-%Y", TIMESTAMP ${end_date_previous_period}))
-            end
-          {% else %}
-          case when {% condition parameters.choose_date %} timestamp(${date_date}) {% endcondition %} then
-           concat(' From ',FORMAT_DATE("%d-%b-%Y", TIMESTAMP ${start_date_current_period_year})
-                      ,' To ',FORMAT_DATE("%d-%b-%Y", TIMESTAMP ${end_date_current_period_year}))
-                when ${date_date} > (date_sub(date({% date_start parameters.choose_date %}),INTERVAL 1 year ))
-                 and ${date_date} <= (date_sub(date({% date_end parameters.choose_date %}),INTERVAL 1 year )) then
-                concat(' From ',FORMAT_TIMESTAMP("%d-%b-%Y", TIMESTAMP ${start_date_previous_year})
-                        ,' To ',FORMAT_TIMESTAMP("%d-%b-%Y", TIMESTAMP ${end_date_previous_year}))
-           end
-          {% endif %};;
-  }
 
-  dimension: start_date_current_period_year {
-    description: "Auxiliar for dimension called 'date_reference'. Should stay hidden"
-    hidden: yes
-    type: string
-    sql: date_add(date({% date_start parameters.choose_date %}), INTERVAL 1 day) ;;
-  }
-
-  dimension: end_date_current_period_year {
-    description: "Auxiliar for dimension called 'date_reference'. Should stay hidden"
-    hidden: yes
-    type: string
-    sql: date({% date_end parameters.choose_date %}) ;;
-  }
-
-  dimension: start_date_previous_period {
-    description: "Auxiliar for dimension called 'date_reference'. Should stay hidden"
-    hidden: yes
-    type: string
-    sql: (date_sub(date({% date_start parameters.choose_date %}),INTERVAL ${parameters.days_days_in_period}-1 day )) ;;
-  }
-
-  dimension: end_date_previous_period {
-    description: "Auxiliar for dimension called 'date_reference'. Should stay hidden"
-    hidden: yes
-    type: string
-    sql: (date_sub(date({% date_end parameters.choose_date %}),INTERVAL ${parameters.days_days_in_period} day )) ;;
-  }
-
-  dimension: start_date_previous_year {
-    description: "Auxiliar for dimension called 'date_reference'. Should stay hidden"
-    hidden: yes
-    type: string
-    sql: date_add((date_sub(date({% date_start parameters.choose_date %}),INTERVAL 1 year )), INTERVAL 1 day);;
-  }
-
-  dimension: end_date_previous_year {
-    description: "Auxiliar for dimension called 'date_reference'. Should stay hidden"
-    type: string
-    sql: (date_sub(date({% date_end parameters.choose_date %}),INTERVAL 1 year )) ;;
-  }
 
   ###---- End of Period Analysis
 
